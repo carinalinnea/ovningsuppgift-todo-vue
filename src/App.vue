@@ -1,26 +1,67 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <Navbar @toggle-add-todo="toggleAddTodo" :showAddTodo="showAddTodo"/>
+    <div v-show="showAddTodo">
+      <Form @add-todo="addTodo" />
+    </div>
+    
+    <Todos @toggle-completed="toggleCompleted" @delete-todo="deleteTodo" :todos='todos'/>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Navbar from './components/Navbar'
+import Form from './components/Form'
+import Todos from './components/Todos'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Navbar,
+    Form,
+    Todos
+  },
+  data() {
+    return {
+      todos: [],
+      showAddTodo: false
+    }
+  },
+  methods: {
+    toggleAddTodo() {
+      this.showAddTodo = !this.showAddTodo
+    },
+    // lägg till en todo, klearar inte fältet dock...
+    addTodo(todo) {
+      this.todos = [...this.todos, todo]
+    },
+    // ta bort en todo
+    deleteTodo(id) {
+      if(confirm('Är du säker på att du vill ta bort?')) {
+        this.todos = this.todos.filter((todo) => todo.id !== id)
+      }
+    },
+    // toggla mellan genomstruken/inte genomstruken
+    toggleCompleted(id) {
+      this.todos = this.todos.map((todo) => todo.id === id ? {...todo, completed: !todo.completed} : todo)
+    },
+  },
+  created() {
+    this.todos = [
+      {id: 1, todo: 'Simma', completed: false},
+      {id: 2, todo: 'Sjunga', completed: true},
+      {id: 3, todo: 'Läkarbesök', completed: true}
+    ]
+    
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+
+.btn-green {
+  background-color: rgb(36, 163, 31);
+  color: #fff;
+  border-radius: 0.7rem;
 }
 </style>
